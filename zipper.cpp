@@ -1,7 +1,34 @@
 #include <iostream>
 #include <vector>
+#include <cassert>
 #include <unordered_map>
+#include <fstream>
+#include <sstream>
 #include <queue>
+
+// todo save compressed data to file. read the file and decommpress
+std::string readFile(const std::string& filePath) {
+    std::ifstream inputFile(filePath);
+
+    // Check if the file is opened successfully
+    if (!inputFile.is_open()) {
+        std::cerr << "Error opening the file: " << filePath << std::endl;
+        return ""; // Return an empty string to indicate an error
+    }
+
+    // Read the contents of the file and store in a string
+    std::stringstream contentStream;
+    std::string line;
+    while (std::getline(inputFile, line)) {
+        contentStream << line << "\n"; // Append each line with a newline character
+    }
+
+    // Close the file
+    inputFile.close();
+
+    // Return the content as a string
+    return contentStream.str();
+}
 
 struct HuffmanNode {
     char data;
@@ -125,7 +152,8 @@ std::string huffman_decode(const std::string& encoded_text, const std::unordered
 }
 
 int main() {
-    std::string input_string = "hello world";
+    // std::string input_string = readFile("lz78_compression/sample.txt");
+    std::string input_string = "i am king";
     std::unordered_map<char, int> frequencies;
 
     for (char ch : input_string) {
@@ -155,5 +183,7 @@ int main() {
     std::cout << "Decompressed Data: " << decompressed_data << std::endl;
     std::cout << "Huffman Decoded Data: " << huffman_decoded << std::endl;
 
+    assert(decompressed_data == input_string);
+    std::cout << "Decompression successful!" << std::endl;
     return 0;
 }
