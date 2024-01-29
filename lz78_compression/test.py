@@ -1,5 +1,5 @@
 def lz78_compress(input_string):
-    input_string = list(input_string[::-1])
+    input_string = list(input_string)
     dictionary = {}
     compressed_data = []
     current = ""
@@ -14,12 +14,11 @@ def lz78_compress(input_string):
                 compressed_data.append((0, current[-1]))
             dictionary[current] = len(dictionary) + 1
             current = ""
-    # Output the last remaining phrase in the dictionary
-    # if current:
-    #     try:
-    #         compressed_data.append((dictionary[current[:-1]], current[-1]))
-    #     except:
-    #         compressed_data.append((0, current))
+    if current:
+        try:
+            compressed_data.append((dictionary[current[:-1]], current[-1]))
+        except:
+            compressed_data.append((0, current))
     return compressed_data
 
 
@@ -35,11 +34,7 @@ def lz78_decompress(compressed_data: list) -> str:
 
     return result
 
-# Example usage
 input_string = "ashok is a king."
 compressed_data = lz78_compress(input_string)
-print(compressed_data)
-# print("Compressed Data:")
-# for code, char in compressed_data:
-#     print(f"({code}, '{char}')")
+
 assert input_string == lz78_decompress(compressed_data)
