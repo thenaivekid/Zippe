@@ -6,8 +6,6 @@
 #include <sstream>
 
 std::vector<std::pair<int, char>> lz78_compress(const std::string& input_string) {
-    // todo use more efficient data strucutes
-     
     std::unordered_map<std::string, int> dictionary;
     std::vector<std::pair<int, char>> compressed_data;
     std::string current = "";
@@ -49,12 +47,39 @@ std::string lz78_decompress(const std::vector<std::pair<int, char>>& compressed_
     return result;
 }
 
-int main() {
-    // std::string input_string = "\n\n\n\n\n\n\n\n\n\n\nmkasdnfkjnknksadfnkjnkjafndsknkfnsadkjsdkkjnfda\n\n\n\n\n\n\n\n\namflksdmad,sksfn sdkf nsadkf sdk\n\n\n\naksnfkdsmnlkmlfksmakldmkldsmlksdmldsmdslfmlmfds\n\n\n";
-    std::string input_string = "ashok is the king.";
-    // std::string input_string = "234029i034jkeklfsdmlkmojoi2jo";
+void saveCompressedDataToFile(const std::string& filename, const std::vector<std::pair<int, char>>& compressed_data) {
+    std::ofstream outputFile(filename, std::ios::binary);
+    if (outputFile.is_open()) {
+        for (const auto& entry : compressed_data) {
+            outputFile.write(reinterpret_cast<const char*>(&entry), sizeof(entry));
+        }
+        outputFile.close();
+    } else {
+        std::cerr << "Error opening the file for writing: " << filename << std::endl;
+    }
+}
 
-// to work with file
+std::vector<std::pair<int, char>> readCompressedDataFromFile(const std::string& filename) {
+    std::ifstream inputFile(filename, std::ios::binary);
+    std::vector<std::pair<int, char>> compressed_data;
+
+    if (inputFile.is_open()) {
+        std::pair<int, char> entry;
+        while (inputFile.read(reinterpret_cast<char*>(&entry), sizeof(entry))) {
+            compressed_data.push_back(entry);
+        }
+        inputFile.close();
+    } else {
+        std::cerr << "Error opening the file for reading: " << filename << std::endl;
+    }
+
+    return compressed_data;
+}
+
+int main() {
+    std::string input_string = "ashok is the king.";
+
+    // to work with file
     std::ifstream inputFile("sample.txt");
 
     // Check if the file is opened successfully
@@ -71,17 +96,22 @@ int main() {
 
     // Close the file
     inputFile.close();
+
     // Compression
     std::vector<std::pair<int, char>> compressed_data = lz78_compress(input_string);
 
+    // Save compressed data to a file
+    saveCompressedDataToFile("compressed_data.bin", compressed_data);
+
+    // Read compressed data from the file
+    std::vector<std::pair<int, char>> read_compressed_data = readCompressedDataFromFile("compressed_data.bin");
+
     // Decompression
-    std::string decompressed_data = lz78_decompress(compressed_data);
+    std::string decompressed_data = lz78_decompress(read_compressed_data);
 
-    // // Print results
+    // Print results
+    std::cout << decompressed_data << std::endl;
     std::cout << "Original String: " << input_string.substr(0, 100) << std::endl;
-
-    // std::cout << "Decompressed Data: " << decompressed_data << std::endl;
-
     assert(decompressed_data == input_string);
     std::cout << "Decompression successful!" << std::endl;
 
@@ -95,7 +125,8 @@ int main() {
     std::cout << "Memory usage of input_string: " << input_string_memory << " bytes" << std::endl;
     std::cout << "Memory usage of compressed_data: " << compressed_data_memory << " bytes" << std::endl;
     std::cout << "memory saved: " << input_string_memory - compressed_data_memory << std::endl;
-
-
     return 0;
 }
+
+
+
