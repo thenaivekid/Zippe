@@ -121,8 +121,10 @@ def lz78_decompress(compressed_data: list) -> str:
 
 # """
 
-input_string = "\n\n\n\n\n\n\n\n\n\n\nmkasdnfkjnknksadfnkjnkjafndsknkfnsadkjsdkkjnfda\n\n\n\n\n\n\n\n\namflksdmad,sksfn sdkf nsadkf sdk\n\n\n\naksnfkdsmnlkmlfksmakldmkldsmlksdmldsmdslfmlmfds\n\n\n";
-
+# input_string = "\n\n\n\n\n\n\n\n\n\n\nmkasdnfkjnknksadfnkjnkjafndsknkfnsadkjsdkkjnfda\n\n\n\n\n\n\n\n\namflksdmad,sksfn sdkf nsadkf sdk\n\n\n\naksnfkdsmnlkmlfksmakldmkldsmlksdmldsmdslfmlmfds\n\n\n";
+with open("sample.txt", "r") as f:
+    input_string = f.readlines()
+input_string = "".join(input_string)
 compressed_data = lz78_compress(input_string)
 decompressed_data = lz78_decompress(compressed_data)
 # print(decompressed_data)
@@ -132,4 +134,5 @@ compressed_size = sys.getsizeof(compressed_data)
 # Print the results
 print(f"Original Size: {original_size} bytes")
 print(f"Compressed Size: {compressed_size} bytes")
+print(f"storage reduced {original_size - compressed_size} bytes")
 assert input_string == decompressed_data, "decompressed data is not same as input data"
