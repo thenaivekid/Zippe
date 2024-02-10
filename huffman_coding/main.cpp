@@ -5,8 +5,6 @@
 #include <queue>
 #include <bitset>
 
-using namespace std;
-
 struct HuffmanNode
 {
     char key;
@@ -24,7 +22,7 @@ struct compareNodes
     }
 };
 
-void traverseHuffmanTree(HuffmanNode *root, string str, unordered_map<char, string> &huffmanCodes)
+void traverseHuffmanTree(HuffmanNode *root, std::string str, std::unordered_map<char, std::string> &huffmanCodes)
 {
     if (!root)
     {
@@ -38,17 +36,17 @@ void traverseHuffmanTree(HuffmanNode *root, string str, unordered_map<char, stri
     traverseHuffmanTree(root->right, str + '1', huffmanCodes);
 }
 
-HuffmanNode *buildHuffmanTree(string text)
+HuffmanNode *buildHuffmanTree(std::string text)
 {
     // count frequency of char and store it in unordered_map
-    unordered_map<char, int> freq;
+    std::unordered_map<char, int> freq;
     for (char ch : text)
     {
         freq[ch]++;
     }
 
     // create pririty_queue to store nodes
-    priority_queue<HuffmanNode *, vector<HuffmanNode *>, compareNodes> pq;
+    std::priority_queue<HuffmanNode *, std::vector<HuffmanNode *>, compareNodes> pq;
     for (const auto &key : freq)
     {
         pq.push(new HuffmanNode(key.first, key.second));
@@ -69,58 +67,58 @@ HuffmanNode *buildHuffmanTree(string text)
     return pq.top();
 }
 
-string compressFile(string text, unordered_map<char, string> &huffmanCodes)
+std::string compressFile(std::string text, std::unordered_map<char, std::string> &huffmanCodes)
 {
 
-    string encodedString = "";
+    std::string encodedText = "";
     for (char ch : text)
     {
-        encodedString += huffmanCodes[ch];
+        encodedText += huffmanCodes[ch];
     }
     // print encoded text
-    //  cout << "encoded string is " << encodedString << endl;
-    return encodedString;
+    //  cout << "encoded text is " << encodedText << endl;
+    return encodedText;
 }
 
-string decompressFile(string encodedText, unordered_map<char, string> huffmanCodes)
+std::string decompressFile(std::string encodedText, std::unordered_map<char, std::string> huffmanCodes)
 {
-    string decoded_text = "";
-    unordered_map<string, char> reverseCodes;
+    std::string decodedText = "";
+    std::unordered_map<std::string, char> reverseCodes;
     for (auto key_value : huffmanCodes)
     {
         reverseCodes[key_value.second] = key_value.first;
     }
 
-    string bit = "";
+    std::string bit = "";
     for (char ch : encodedText)
     {
         bit += ch;
         if (reverseCodes.find(bit) != reverseCodes.end())
         {
-            decoded_text += reverseCodes[bit];
+            decodedText += reverseCodes[bit];
             bit = "";
         }
     }
-    // print decoded_text
-    // cout << "decoded text is " << decoded_text << endl;
-    return decoded_text;
+    // print decoded text
+    // cout << "decoded text is " << decodedText << endl;
+    return decodedText;
 }
 
-string readFile(const string filename)
+std::string readFile(const std::string filename)
 {
-    ifstream inputFile(filename);
+    std::ifstream inputFile(filename);
 
     // Check if the file is opened successfully
     if (!inputFile.is_open())
     {
         std::cerr << "Error opening the file: " << filename << std::endl;
-        return ""; // Return an empty string to indicate an error
+        return ""; // Return an empty std::string to indicate an error
     }
 
-    // Read the contents of the file and store in a string
-    stringstream contentStream;
-    string line;
-    while (getline(inputFile, line))
+    // Read the contents of the file and store in a std::string
+    std::stringstream contentStream;
+    std::string line;
+    while (std::getline(inputFile, line))
     {
         contentStream << line << "\n"; // Append each line with a newline character
     }
@@ -128,13 +126,13 @@ string readFile(const string filename)
     // Close the file
     inputFile.close();
 
-    // Return the content as a string
+    // Return the content as a std::string
     return contentStream.str();
 }
 
-void saveFile(const string filename, const string text)
+void saveFile(const std::string filename, const std::string text)
 {
-    std::ofstream outputFile(filename);
+    std::ofstream outputFile(filename, std::ios::binary);
     if (outputFile.is_open())
     {
         for (const auto &entry : text)
@@ -149,20 +147,68 @@ void saveFile(const string filename, const string text)
     }
 }
 
+void saveCompressedDataToFile(const std::string filename, const std::string encodedText)
+{
+    std::ofstream outputFile(filename, std::ios::binary);
+    if (outputFile.is_open())
+    {
+        for (size_t i = 0; i < encodedText.size(); i += 8)
+        {
+            char byte = 0;
+            for (size_t j = 0; j < 8 && i + j < encodedText.size(); ++j)
+            {
+                byte |= (encodedText[i + j] - '0') << (7 - j); // Convert '0'/'1' to bit and shift
+            }
+            outputFile.write(&byte, 1);
+        }
+
+        outputFile.close();
+    }
+    else
+    {
+        std::cerr << "Error opening the file for writing: " << filename << std::endl;
+    }
+}
+
+std::string readCompressedDataFromFile(const std::string &filename)
+{
+    std::ifstream inputFile(filename, std::ios::binary);
+    if (!inputFile.is_open())
+    {
+        std::cerr << "Error: Unable to open file for reading." << std::endl;
+        return "";
+    }
+
+    std::string encodedText = "";
+    char byte;
+    while (inputFile.read(&byte, 1))
+    {
+        int validBits = (inputFile.peek() == EOF) ? inputFile.gcount() * 8 : 8;
+        // Convert byte to bits and append to encoded data std::string
+        for (int i = 7; i >= 8 - validBits; --i)
+        {
+            encodedText += ((byte >> i) & 1) ? '1' : '0';
+        }
+    }
+
+    inputFile.close();
+    return encodedText;
+}
+
 int main()
 {
-    string text = readFile("sample.txt");
-    unordered_map<char, string> huffmanCodes;
+    std::string text = readFile("sample.txt");
+    std::unordered_map<char, std::string> huffmanCodes;
     HuffmanNode *rootNode = buildHuffmanTree(text);
     traverseHuffmanTree(rootNode, "", huffmanCodes);
     // compress data
-    // string encodedText = compressFile(text, huffmanCodes);
-    // saveFile("compressed_data.bin", encodedText);
+    std::string encodedText = compressFile(text, huffmanCodes);
+    saveCompressedDataToFile("compressed_data.bin", encodedText);
 
     // decompress data
-    string encodedText = readFile("compressed_data.bin");
-    string decodedText = decompressFile(encodedText, huffmanCodes);
-    saveFile("decompressed_data.txt", decodedText);
+    // std::string encodedText = readCompressedDataFromFile("compressed_data.bin");
+    // std::string decodedText = decompressFile(encodedText, huffmanCodes);
+    // saveFile("decompressed_data.txt", decodedText);
 
     return 0;
 }
