@@ -77,25 +77,25 @@ std::vector<std::pair<int, char>> readCompressedDataFromFile(const std::string& 
 }
 
 int main() {
-    std::string input_string = "ashok is the king.";
+    std::string input_string = "0011000111111111110110010100101111010111100010100000010101011010101110001110011100";
 
     // to work with file
-    std::ifstream inputFile("sample.txt");
+    // std::ifstream inputFile("sample.txt");
 
-    // Check if the file is opened successfully
-    if (!inputFile.is_open()) {
-        std::cerr << "Error opening the file: " << std::endl;
-        return 1; // Return an error code
-    }
+    // // Check if the file is opened successfully
+    // if (!inputFile.is_open()) {
+    //     std::cerr << "Error opening the file: " << std::endl;
+    //     return 1; // Return an error code
+    // }
 
-    // Read the contents of the file and store in a variable
-    std::string line;
-    while (std::getline(inputFile, line)) {
-        input_string += line + "\n"; // Append each line with a newline character
-    }
+    // // Read the contents of the file and store in a variable
+    // std::string line;
+    // while (std::getline(inputFile, line)) {
+    //     input_string += line + "\n"; // Append each line with a newline character
+    // }
 
-    // Close the file
-    inputFile.close();
+    // // Close the file
+    // inputFile.close();
 
     // Compression
     std::vector<std::pair<int, char>> compressed_data = lz78_compress(input_string);
@@ -113,6 +113,7 @@ int main() {
     std::cout << decompressed_data << std::endl;
     std::cout << "Original String: " << input_string.substr(0, 100) << std::endl;
     assert(decompressed_data == input_string);
+    std::cout << decompressed_data << " this is decom " << std::endl;
     std::cout << "Decompression successful!" << std::endl;
 
     std::size_t input_string_memory = sizeof(input_string) + input_string.capacity();
