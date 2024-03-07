@@ -84,7 +84,7 @@ std::string compressFile(std::string text, std::unordered_map<char, std::string>
     {
         encodedText += huffmanCodes[ch];
     }
-    // cout << "text endcoded " << encodedText << endl;
+    
     return encodedText;
 }
 
@@ -518,7 +518,8 @@ class MyFrame : public wxFrame {
 public:
     MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
         : wxFrame(NULL, wxID_ANY, title, pos, size)
-    {// Material Design colors
+    {
+        // Material Design colors
         wxColour backgroundColor(48, 48, 48); // Dark Grey for background
         wxColour buttonColor(33, 150, 243);   // Blue for buttons
 
@@ -541,6 +542,7 @@ public:
 
         vbox->Add(compressButton, 0, wxALIGN_CENTER | wxALL, 30);
         compressButton->Bind(wxEVT_BUTTON, &MyFrame::OnCompressButtonClicked, this);
+
 
         // Add decompress button
         decompressButton = new wxButton(panel, wxID_ANY, "Decompress");
@@ -568,6 +570,7 @@ public:
 
         if (!inputFile.empty())
         {
+
             // Create and show file dialog for output file selection
                 wxFileDialog saveFileDialog(nullptr, _("Save File"), "", "", "All files (.)|*.txt*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
             saveFileDialog.SetSize(wxSize(1500, 600)); // Set dialog size
@@ -621,6 +624,7 @@ public:
                 //Simulate compression process
                 for (int i = 0; i < 100; ++i)
                 {
+
                     progressDialog.Update(i, wxString::Format("Decompressing %d%%", i));
                     wxMilliSleep(50); // Simulate work being done
                 }
